@@ -97,6 +97,8 @@ while True:
         for i in range(len(urls)):
             mark_attendence(username[i], password[i],urls[i]) #Marking attendence
         urls.clear()
+        total.clear()
+        timetables.clear()
         now6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
         if now >= now6pm:
             sys.exit()
