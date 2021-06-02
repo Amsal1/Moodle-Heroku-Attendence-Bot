@@ -2,12 +2,12 @@
     "Total": 2,
     "0": {
         "username": "1800101253",
-        "password": "Amsal.123",
+        "password": "testpassword",
         "course": "CSE-2_3rdYr_Grp1"
     },
     "1": {
         "username": "1800102491",
-        "password": "#Sandeep99",
+        "password": "testpassword2",
         "course": "CSE-2_3rdYr_Grp2"
     }
 }
