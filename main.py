@@ -63,6 +63,7 @@ def mark_attendence(username, password, subject):
                     end=0
             except WebDriverException:
                     end=0
+    driver.quit()
     return
 
 username = []
