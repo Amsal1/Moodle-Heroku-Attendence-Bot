@@ -1,0 +1,37 @@
+{
+    "name": "Moodle Heroku Attendence Bot",
+    "description": "Attendance bot implemented on Heroku Free Dyno Bot!",
+    "keywords": [
+      "bot",
+      "easy",
+      "sleek"
+    ],
+    "repository": "https://github.com/Amsal1/Moodle-Heroku-Attendence-Bot",
+    "env": {
+      "CHROMEDRIVER_PATH": {
+        "description": "ChromeDriver Path",
+        "value": "/app/.chromedriver/bin/chromedriver"
+      },
+      "TZ": {
+        "description": "TimeZone set to Kolkata India.",
+        "value": "Asia/Calcutta"
+      }
+    },
+    "formation": {
+      "web": {
+        "quantity": 1,
+        "size": "free"
+      }
+    },
+    "buildpacks": [
+      {
+        "url": "heroku/python"
+      },
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+      },
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+      }
+    ]
+  }
