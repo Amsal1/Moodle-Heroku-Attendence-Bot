@@ -13,7 +13,7 @@
         "value": "/app/.chromedriver/bin/chromedriver"
       },
       "TZ": {
-        "description": "TimeZone set to Kolkata India.",
+        "description": "TimeZone for python script time codes.",
         "value": "Asia/Calcutta"
       }
     },
