@@ -16,7 +16,7 @@ def scrape_top_news():
 
         
     wait = WebDriverWait(browser, 10)
-    browser.get('https://google.com/')
+    browser.get('https://news.ycombinator.com/')
     element_list = wait.until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".title > a"))
     )
