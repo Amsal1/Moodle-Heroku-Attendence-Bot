@@ -13,9 +13,9 @@ import contextlib
 import urllib3
 import os
 import sys
-import time
+import time,datetime
 from validator_collection import validators, checkers
-
+import json
 
 def mark_attendence(username, password, subject):
     chrome_options = webdriver.ChromeOptions()
@@ -24,16 +24,14 @@ def mark_attendence(username, password, subject):
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
-    tmain = 3000
-        
+    tmain = 900    
     t1=time.perf_counter()                                          #current-time
     driver.implicitly_wait(45)
-    driver.set_page_load_timeout(500)
+    driver.set_page_load_timeout(240)
     end=0
     while end==0:
             try:
                 driver.get("https://ilizone.iul.ac.in/my/")     #Your moodle website address
-                print("Working fine, opened ili login page!")
                 t2=time.perf_counter()                          #time-now
                 if t2-t1 > tmain:                               #comment this 'if' you don't need timeout for your works...
                     driver.quit()                           #
@@ -65,20 +63,40 @@ def mark_attendence(username, password, subject):
                     end=0
             except WebDriverException:
                     end=0
-    driver.quit()
+    return
 
+username = []
+password = []
+course = []
+timetables = []
+total = []
+urls = []
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        username = sys.argv[1]
-        password = sys.argv[2]
-        subject =  sys.argv[3]
-    else:   
-        print("You can also pass commandline arguments with AACS_ILI in this way: AACS_ILI.exe Username Password Subject_Code")
-        print("")
-        print("Optionally you can pass chrome window size and timeout of whole program(default=3000seconds) execution in commandline arguments with AACS_ILI in this way: AACS_ILI.exe Username Password Subject_Code 1920 1080 2500")
-        print("")
-        username = input("Enter in your username: ")
-        password = getpass("Enter your password: ")
-        subject =  input("Enter 1 ILI Subject Code(eg. CS311_A,CS309_B..., make sure your enter exactly like mentioned in ILI) OR You can enter the link of course page: ")
-    mark_attendence(username, password,subject)
+    with open("users.json") as jsonFile1: #Import users data from users.json to lists
+        users = json.load(jsonFile1)
+        total_users = users["Total"]
+        for i in range(total_users):
+            username.append(users[f"{i}"]["username"])
+            password.append(users[f"{i}"]["password"])
+            course.append(users[f"{i}"]["course"])
+while True:    
+        now = datetime.datetime.now()
+        day = now.strftime("%A")
+        if day == "Sunday":
+            sys.exit()
+        with open("timetable.json") as jsonFile2: #Import timetable of every user in a list
+            timetable = json.load(jsonFile2)
+            for i in range(len(course)):
+                timetables.append(timetable[f"{course[i]}"][f"{day}"])  #Importing Today timetable
+                total.append(int(timetables[i]["Total"]))   #Importing Total number of periods today
+                for j in range(total[i]):
+                    if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
+                        urls.append(timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
+        
+        for i in range(len(urls)):
+            mark_attendence(username[i], password[i],urls[i]) #Marking attendence
+        urls.clear()
+        now6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
+        if now >= now6pm:
+            sys.exit()
