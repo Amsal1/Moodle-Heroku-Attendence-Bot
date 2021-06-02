@@ -93,7 +93,7 @@ while True:
                 for j in range(total[i]):
                     if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
                         urls.append(timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
-        time.sleep(60)
+
         for i in range(len(urls)):
             mark_attendence(username[i], password[i],urls[i]) #Marking attendence
         urls.clear()
