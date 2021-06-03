@@ -30,39 +30,39 @@ def mark_attendence(username, password, subject):
     driver.set_page_load_timeout(240)
     end=0
     while end==0:
-            try:
-                driver.get("https://ilizone.iul.ac.in/my/")     #Your moodle website address
-                t2=time.perf_counter()                          #time-now
-                if t2-t1 > tmain:                               #comment this 'if' you don't need timeout for your works...
-                    driver.quit()                           #
-                if not driver.find_elements_by_xpath("//span[@class='userbutton']"):    #For checking if logged in or not
-                    username_textbox = driver.find_element_by_id("username")
-                    username_textbox.send_keys(username)
-                    password_textbox = driver.find_element_by_id("password")
-                    password_textbox.send_keys(password)
-                    login_button = driver.find_element_by_id("loginbtn")
-                    login_button.submit()
-                if(checkers.is_url(subject)):
-                    driver.get(subject)
-                    driver.find_element_by_link_text("Attendance").click()
-                    driver.find_element_by_link_text("Submit attendance").click()
-                    driver.find_element_by_xpath("//span[text()='Present']").click()
-                    driver.find_element_by_xpath("//input[@value='Save changes']").click()
-                    end=1
-                else:
-                    driver.find_element_by_link_text(subject).click()
-                    driver.find_element_by_link_text("Attendance").click()
-                    driver.find_element_by_link_text("Submit attendance").click()
-                    #wait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Present']"))).click()
-                    driver.find_element_by_xpath("//span[text()='Present']").click()
-                    driver.find_element_by_xpath("//input[@value='Save changes']").click()
-                    end=1
-            except NoSuchElementException:
-                    end=0
-            except TimeoutException:
-                    end=0
-            except WebDriverException:
-                    end=0
+        try:
+            driver.get("https://ilizone.iul.ac.in/my/")     #Your moodle website address
+            t2=time.perf_counter()                          #time-now
+            if t2-t1 > tmain:                               #comment this 'if' you don't need timeout for your works...
+                driver.quit()                           #
+            if not driver.find_elements_by_xpath("//span[@class='userbutton']"):    #For checking if logged in or not
+                username_textbox = driver.find_element_by_id("username")
+                username_textbox.send_keys(username)
+                password_textbox = driver.find_element_by_id("password")
+                password_textbox.send_keys(password)
+                login_button = driver.find_element_by_id("loginbtn")
+                login_button.submit()
+            if(checkers.is_url(subject)):
+                driver.get(subject)
+                driver.find_element_by_link_text("Attendance").click()
+                driver.find_element_by_link_text("Submit attendance").click()
+                driver.find_element_by_xpath("//span[text()='Present']").click()
+                driver.find_element_by_xpath("//input[@value='Save changes']").click()
+                end=1
+            else:
+                driver.find_element_by_link_text(subject).click()
+                driver.find_element_by_link_text("Attendance").click()
+                driver.find_element_by_link_text("Submit attendance").click()
+                #wait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Present']"))).click()
+                driver.find_element_by_xpath("//span[text()='Present']").click()
+                driver.find_element_by_xpath("//input[@value='Save changes']").click()
+                end=1
+        except NoSuchElementException:
+                end=0
+        except TimeoutException:
+                end=0
+        except WebDriverException:
+                end=0
     driver.quit()
     return
 
@@ -74,6 +74,7 @@ total = []
 urls = []
 
 if __name__ == '__main__':
+	print("Program loaded successfully")
     with open("users.json") as jsonFile1: #Import users data from users.json to lists
         users = json.load(jsonFile1)
         total_users = users["Total"]
@@ -81,7 +82,7 @@ if __name__ == '__main__':
             username.append(users[f"{i}"]["username"])
             password.append(users[f"{i}"]["password"])
             course.append(users[f"{i}"]["course"])
-while True:    
+    while True:    
         now = datetime.datetime.now()
         day = now.strftime("%A")
         if day == "Sunday":
@@ -94,7 +95,7 @@ while True:
                 for j in range(total[i]):
                     if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
                         urls.append(timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
-
+        
         for i in range(len(urls)):
             mark_attendence(username[i], password[i],urls[i]) #Marking attendence
         urls.clear()
