@@ -103,15 +103,21 @@ if __name__ == '__main__':
                         if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
                             urls[i] = (timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
                             
-        
+        start = time.time()
         for i in range(len(username)):
             if urls[i] == 'none':
                 continue
             else:
                 mark_attendence(username[i], password[i],urls[i]) #Marking attendence
+        end = time.time()
+        timetaken = int(end-start)
+        if not (timetaken) > 60:                    #If mark attendence job is done before 1min, this will compensate the time so that next loop only runs at 1 minute difference anyhow
+            time.sleep(60-timetaken)                #This is done so that it doesn't run the loop at the same minute again and then just keep trying to mark attendence because there is currently no detection placed to detect if attendence is marked or not.
+
         urls.clear()
         total.clear()
         timetables.clear()
+
         now6pm = now.replace(hour=18, minute=00, second=0, microsecond=0)
         if now >= now6pm:
             print("Program completed its work for today and now exiting.")
