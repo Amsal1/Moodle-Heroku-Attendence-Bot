@@ -14,7 +14,7 @@ import urllib3
 import os
 import sys
 import time,datetime
-from validator_collection import validators, checkers
+from validator_collection import checkers
 import json
 
 def mark_attendence(username, password, subject):
@@ -24,18 +24,18 @@ def mark_attendence(username, password, subject):
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
-    tmain = 900    
+    tmain = 700    
     t1=time.perf_counter()                                          #current-time
     driver.implicitly_wait(45)
-    driver.set_page_load_timeout(240)
+    driver.set_page_load_timeout(100)
     end=0
     while end==0:
         try:
             driver.get("https://ilizone.iul.ac.in/my/")     #Your moodle website address
             t2=time.perf_counter()                          #time-now
-            if t2-t1 > tmain:                               #comment this 'if' you don't need timeout for your works...
-                driver.quit()                           #
-            if not driver.find_elements_by_xpath("//span[@class='userbutton']"):    #For checking if logged in or not
+            if t2-t1 > tmain:                               #comment this if you don't need timeout for your works...
+                end=1                         
+            if driver.find_elements_by_xpath("//span[@class='login']"):    #For checking if logged in or not
                 username_textbox = driver.find_element_by_id("username")
                 username_textbox.send_keys(username)
                 password_textbox = driver.find_element_by_id("password")
@@ -50,13 +50,15 @@ def mark_attendence(username, password, subject):
                 driver.find_element_by_xpath("//input[@value='Save changes']").click()
                 end=1
             else:
-                driver.find_element_by_link_text(subject).click()
-                driver.find_element_by_link_text("Attendance").click()
-                driver.find_element_by_link_text("Submit attendance").click()
-                #wait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Present']"))).click()
-                driver.find_element_by_xpath("//span[text()='Present']").click()
-                driver.find_element_by_xpath("//input[@value='Save changes']").click()
                 end=1
+            # else:
+            #     driver.find_element_by_link_text(subject).click()
+            #     driver.find_element_by_link_text("Attendance").click()
+            #     driver.find_element_by_link_text("Submit attendance").click()
+            #     #wait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Present']"))).click()
+            #     driver.find_element_by_xpath("//span[text()='Present']").click()
+            #     driver.find_element_by_xpath("//input[@value='Save changes']").click()
+            #     end=1
         except NoSuchElementException:
                 end=0
         except TimeoutException:
@@ -87,20 +89,30 @@ if __name__ == '__main__':
         day = now.strftime("%A")
         if day == "Sunday":
             sys.exit()
-        with open("timetable.json") as jsonFile2: #Import timetable of every user in a list
+        with open("timetable.json") as jsonFile2: #Import whole timetable of all courses
             timetable = json.load(jsonFile2)
-            for i in range(len(course)):
+            for i in range(len(username)):  #Running n number of times for all users
                 timetables.append(timetable[f"{course[i]}"][f"{day}"])  #Importing Today timetable
-                total.append(int(timetables[i]["Total"]))   #Importing Total number of periods today
-                for j in range(total[i]):
-                    if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
-                        urls.append(timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
+                urls.append("none")
+                if int(timetables[i]["Total"]) == 0:
+                    total.append(int(timetables[i]["Total"]))
+                    continue
+                else:
+                    total.append(int(timetables[i]["Total"]))   #Importing Total number of periods today
+                    for j in range(total[i]):
+                        if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
+                            urls[i] = (timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
+                            
         
-        for i in range(len(urls)):
-            mark_attendence(username[i], password[i],urls[i]) #Marking attendence
+        for i in range(len(username)):
+            if urls[i] == 'none':
+                continue
+            else:
+                mark_attendence(username[i], password[i],urls[i]) #Marking attendence
         urls.clear()
         total.clear()
         timetables.clear()
-        now6pm = now.replace(hour=18, minute=0, second=0, microsecond=0)
+        now6pm = now.replace(hour=18, minute=00, second=0, microsecond=0)
         if now >= now6pm:
+            print("Program completed its work for today and now exiting.")
             sys.exit()
