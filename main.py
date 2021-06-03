@@ -74,7 +74,7 @@ total = []
 urls = []
 
 if __name__ == '__main__':
-	print("Program loaded successfully")
+    print("Program loaded successfully")
     with open("users.json") as jsonFile1: #Import users data from users.json to lists
         users = json.load(jsonFile1)
         total_users = users["Total"]
