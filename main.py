@@ -111,7 +111,7 @@ if __name__ == '__main__':
                 mark_attendence(username[i], password[i],urls[i]) #Marking attendence
         end = time.time()
         timetaken = int(end-start)
-        if not (timetaken) > 60:                    #If mark attendence job is done before 1min, this will compensate the time so that next loop only runs at 1 minute difference anyhow
+        if timetaken < 60:                    #If mark attendence job is done before 1min, this will compensate the time so that next loop only runs at 1 minute difference anyhow
             time.sleep(60-timetaken)                #This is done so that it doesn't run the loop at the same minute again and then just keep trying to mark attendence because there is currently no detection placed to detect if attendence is marked or not.
 
         urls.clear()
