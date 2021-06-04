@@ -111,7 +111,7 @@ if __name__ == '__main__':
                     timetables[x][f"{y}"]['marked'] = timetables[x][f"{y}"].pop('at')
                     timetables[x][f"{y}"]['marked'] = "no"
             with open('marked.json', 'w') as fp:
-                json.dump(timetables, fp)
+                json.dump(timetables, fp, indent=4, sort_keys=True)
                 saved_timetable=True
 
         start = time.time()
@@ -127,7 +127,7 @@ if __name__ == '__main__':
                             if urls[i] == marked[i][f"{j}"]['url']:
                                 marked[i][f"{j}"]['marked'] = "yes" #Writing marked.json with attendence output
                         with open("marked.json", 'w') as jsonFile4:
-                            json.dump(marked,jsonFile4)
+                            json.dump(marked,jsonFile4, indent=4, sort_keys=True)
                     marked=False
         end = time.time()
         timetaken = int(end-start)
