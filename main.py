@@ -11,13 +11,13 @@ from selenium.common.exceptions import WebDriverException
 from getpass import getpass
 import contextlib
 import urllib3
-import os
-import sys
+import os,sys
 import time,datetime
 from validator_collection import checkers
 import json
 
-def mark_attendence(username, password, subject):
+def mark_attendence(username, password, link):
+    global marked
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
     chrome_options.add_argument("--headless")
@@ -42,17 +42,18 @@ def mark_attendence(username, password, subject):
                 password_textbox.send_keys(password)
                 login_button = driver.find_element_by_id("loginbtn")
                 login_button.submit()
-            if(checkers.is_url(subject)):
-                driver.get(subject)
+            if(checkers.is_url(link)):
+                driver.get(link)
                 driver.find_element_by_link_text("Attendance").click()
                 driver.find_element_by_link_text("Submit attendance").click()
                 driver.find_element_by_xpath("//span[text()='Present']").click()
                 driver.find_element_by_xpath("//input[@value='Save changes']").click()
+                marked=True
                 end=1
             else:
                 end=1
             # else:
-            #     driver.find_element_by_link_text(subject).click()
+            #     driver.find_element_by_link_text(link).click()
             #     driver.find_element_by_link_text("Attendance").click()
             #     driver.find_element_by_link_text("Submit attendance").click()
             #     #wait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Present']"))).click()
@@ -74,6 +75,8 @@ course = []
 timetables = []
 total = []
 urls = []
+saved_timetable = False
+marked = False
 
 if __name__ == '__main__':
     print("Program loaded successfully")
@@ -88,27 +91,44 @@ if __name__ == '__main__':
         now = datetime.datetime.now()
         day = now.strftime("%A")
         if day == "Sunday":
-            sys.exit()
+            os._exit(0)
         with open("timetable.json") as jsonFile2: #Import whole timetable of all courses
             timetable = json.load(jsonFile2)
             for i in range(len(username)):  #Running n number of times for all users
                 timetables.append(timetable[f"{course[i]}"][f"{day}"])  #Importing Today timetable
                 urls.append("none")
+                total.append(int(timetables[i]["Total"]))   #Importing Total number of periods today
                 if int(timetables[i]["Total"]) == 0:
-                    total.append(int(timetables[i]["Total"]))
                     continue
                 else:
-                    total.append(int(timetables[i]["Total"]))   #Importing Total number of periods today
                     for j in range(total[i]):
                         if str(timetables[i][f"{j}"]["at"]) == now.strftime("%H:%M"): #If time matches with at variable
                             urls[i] = (timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
-                            
+
+        if saved_timetable == False:
+            for x in range(len(username)):      #Changing 'at' key and values to 'marked' for saving if attendence is marked or not
+                for y in range(total[x]):
+                    timetables[x][f"{y}"]['marked'] = timetables[x][f"{y}"].pop('at')
+                    timetables[x][f"{y}"]['marked'] = "no"
+            with open('marked.json', 'w') as fp:
+                json.dump(timetables, fp)
+                saved_timetable=True
+
         start = time.time()
         for i in range(len(username)):
             if urls[i] == 'none':
                 continue
             else:
                 mark_attendence(username[i], password[i],urls[i]) #Marking attendence
+                if marked == True:
+                    with open("marked.json", 'r') as jsonFile3: #Import marked.json
+                        marked = json.load(jsonFile3)
+                        for j in range(total[i]):
+                            if urls[i] == marked[i][f"{j}"]['url']:
+                                marked[i][f"{j}"]['marked'] = "yes" #Writing marked.json with attendence output
+                        with open("marked.json", 'w') as jsonFile4:
+                            json.dump(marked,jsonFile4)
+                    marked=False
         end = time.time()
         timetaken = int(end-start)
         if timetaken < 60:                    #If mark attendence job is done before 1min, this will compensate the time so that next loop only runs at 1 minute difference anyhow
@@ -121,4 +141,4 @@ if __name__ == '__main__':
         now6pm = now.replace(hour=18, minute=00, second=0, microsecond=0)
         if now >= now6pm:
             print("Program completed its work for today and now exiting.")
-            sys.exit()
+            os._exit(0)
