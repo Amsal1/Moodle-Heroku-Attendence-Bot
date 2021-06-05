@@ -106,10 +106,10 @@ if __name__ == '__main__':
                             urls[i] = (timetables[i][f"{j}"]["url"])   #Save the url for marking the attendence
 
         if saved_timetable == False:
-            for x in range(len(username)):      #Changing 'at' key and values to 'marked' for saving if attendence is marked or not
+            for x in range(len(username)):      #Changing 'at' key and values to "marked" for saving if attendence is marked or not
                 for y in range(total[x]):
-                    timetables[x][f"{y}"]['marked'] = timetables[x][f"{y}"].pop('at')
-                    timetables[x][f"{y}"]['marked'] = "no"
+                    timetables[x][f"{y}"]["marked"] = timetables[x][f"{y}"].pop("at")
+                    timetables[x][f"{y}"]["marked"] = "no"
             with open('marked.json', 'w') as fp:
                 json.dump(timetables, fp, indent=4, sort_keys=True)
                 saved_timetable=True
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                         marked = json.load(jsonFile3)
                         for j in range(total[i]):
                             if urls[i] == marked[i][f"{j}"]['url']:
-                                marked[i][f"{j}"]['marked'] = "yes" #Writing marked.json with attendence output
+                                marked[i][f"{j}"]["marked"] = "yes" #Writing marked.json with attendence output
                         with open("marked.json", 'w') as jsonFile4:
                             json.dump(marked,jsonFile4, indent=4, sort_keys=True)
                     marked=False
