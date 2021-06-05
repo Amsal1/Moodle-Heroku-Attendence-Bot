@@ -11,6 +11,7 @@ from selenium.common.exceptions import WebDriverException
 from getpass import getpass
 import contextlib
 import urllib3
+#from exitstatus import ExitStatus
 import os,sys
 import time,datetime
 from validator_collection import checkers
@@ -31,6 +32,7 @@ def mark_attendence(username, password, link):
     end=0
     while end==0:
         try:
+            marked=False
             driver.get("https://ilizone.iul.ac.in/my/")     #Your moodle website address
             t2=time.perf_counter()                          #time-now
             if t2-t1 > tmain:                               #comment this if you don't need timeout for your works...
@@ -91,7 +93,8 @@ if __name__ == '__main__':
         now = datetime.datetime.now()
         day = now.strftime("%A")
         if day == "Sunday":
-            os._exit(0)
+            sys.exit(0)
+            #sys.exit(ExitStatus.success)
         with open("timetable.json") as jsonFile2: #Import whole timetable of all courses
             timetable = json.load(jsonFile2)
             for i in range(len(username)):  #Running n number of times for all users
@@ -124,11 +127,11 @@ if __name__ == '__main__':
                     with open("marked.json", 'r') as jsonFile3: #Import marked.json
                         marked = json.load(jsonFile3)
                         for j in range(total[i]):
-                            if urls[i] == marked[i][f"{j}"]['url']:
+                            if urls[i] == marked[i][f"{j}"]["url"]:
                                 marked[i][f"{j}"]["marked"] = "yes" #Writing marked.json with attendence output
                         with open("marked.json", 'w') as jsonFile4:
                             json.dump(marked,jsonFile4, indent=4, sort_keys=True)
-                    marked=False
+            marked=False
         end = time.time()
         timetaken = int(end-start)
         if timetaken < 60:                    #If mark attendence job is done before 1min, this will compensate the time so that next loop only runs at 1 minute difference anyhow
@@ -141,4 +144,5 @@ if __name__ == '__main__':
         now6pm = now.replace(hour=18, minute=00, second=0, microsecond=0)
         if now >= now6pm:
             print("Program completed its work for today and now exiting.")
-            os._exit(0)
+            sys.exit(0)
+            #sys.exit(ExitStatus.success)
