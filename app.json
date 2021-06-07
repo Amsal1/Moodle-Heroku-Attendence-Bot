@@ -6,7 +6,6 @@
       "easy",
       "sleek"
     ],
-    
     "env": {
       "CHROMEDRIVER_PATH": {
         "description": "ChromeDriver Path",
