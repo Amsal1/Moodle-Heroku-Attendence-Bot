@@ -11,11 +11,13 @@ from selenium.common.exceptions import WebDriverException
 from getpass import getpass
 import contextlib
 import urllib3
-#from exitstatus import ExitStatus
+
 import os,sys
 import time,datetime
+
 from validator_collection import checkers
 import json
+import signal
 
 def mark_attendence(username, password, link):
     global marked
@@ -93,8 +95,7 @@ if __name__ == '__main__':
         now = datetime.datetime.now()
         day = now.strftime("%A")
         if day == "Sunday":
-            sys.exit(0)
-            #sys.exit(ExitStatus.success)
+            os.kill(os.getpid(), signal.SIGTERM)
         with open("timetable.json") as jsonFile2: #Import whole timetable of all courses
             timetable = json.load(jsonFile2)
             for i in range(len(username)):  #Running n number of times for all users
@@ -144,5 +145,4 @@ if __name__ == '__main__':
         now6pm = now.replace(hour=18, minute=00, second=0, microsecond=0)
         if now >= now6pm:
             print("Program completed its work for today and now exiting.")
-            sys.exit(0)
-            #sys.exit(ExitStatus.success)
+            os.kill(os.getpid(), signal.SIGTERM)
