@@ -6,7 +6,7 @@ Bot created for Marking Attendance on Moodle Based Platform and Implemented on H
 1. [Fork This Repository](https://github.com/Amsal1/Moodle-Heroku-Attendence-Bot/fork)
 2. Edit timetable.json and users.json as per your needs. 
 
-   Note: If you want to keep your users.json data private, you can clone this repo and manually push it on Heroku through Heroku CLI. Make sure you read app.json to know what settings need to be configured with deployment! 
+   Note: If you want to keep your users.json data private, you can download this repo and manually push it to Heroku using [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli). Make sure you read app.json to know what settings need to be configured with deployment! 
 
 3. Deploy on Heroku: 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
